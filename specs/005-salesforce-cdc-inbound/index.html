@@ -40,7 +40,7 @@
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
 
-  .layout{display:grid;grid-template-columns:288px 1fr;min-height:100vh}
+  .layout{display:grid;grid-template-columns:288px minmax(0,1fr);min-height:100vh;max-width:100%;overflow-x:hidden}
 
   /* Sidebar */
   .sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:26px 20px;display:flex;flex-direction:column;gap:22px}
@@ -74,7 +74,7 @@
   .toggle input{accent-color:var(--accent)}
 
   /* Content */
-  .content{max-width:920px;width:100%;margin:0 auto;padding:44px 48px 120px}
+  .content{max-width:920px;width:100%;min-width:0;margin:0 auto;padding:44px 48px 120px}
   section.view{display:none;animation:fade .25s ease}
   section.view.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -85,8 +85,8 @@
 
   /* Overview cards */
   .grid{display:grid;gap:16px}
-  .grid.two{grid-template-columns:repeat(2,1fr)}
-  .grid.four{grid-template-columns:repeat(4,1fr)}
+  .grid.two{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .grid.four{grid-template-columns:repeat(auto-fit,minmax(158px,1fr))}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
   .stat .k{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
   .stat .v{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums}
@@ -116,7 +116,11 @@
   .md pre code{background:none;border:none;padding:0;font-size:12.5px;line-height:1.55}
   .md blockquote{margin:14px 0;padding:2px 16px;border-left:3px solid var(--accent-line);background:var(--accent-soft);border-radius:0 8px 8px 0;color:var(--muted)}
   .md hr{border:none;border-top:1px solid var(--border);margin:28px 0}
-  .md table{border-collapse:collapse;width:100%;margin:16px 0;font-size:13.5px;display:block;overflow-x:auto}
+  .md{overflow-wrap:break-word}
+  .md p,.md li{overflow-wrap:break-word}
+  .md code{overflow-wrap:anywhere}
+  .md pre{max-width:100%}
+  .md table{border-collapse:collapse;width:auto;min-width:100%;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .md th,.md td{border:1px solid var(--border);padding:8px 12px;text-align:left;vertical-align:top}
   .md th{background:var(--surface-2);font-weight:700;white-space:nowrap}
   .md tbody tr:nth-child(even),.md tr:nth-child(even){background:var(--surface-2)}
@@ -153,9 +157,9 @@
   .tstatus.doing{background:var(--accent-soft);color:var(--accent)}
   .tstatus.todo{background:var(--pending-bg);color:var(--muted)}
   .task .par{font-size:10.5px;font-weight:700;color:var(--p3);background:var(--p3-bg);padding:2px 6px;border-radius:6px}
-  .task .desc{margin-top:5px;color:var(--text);font-size:14px}
+  .task .desc{margin-top:5px;color:var(--text);font-size:14px;overflow-wrap:anywhere}
   .task.is-done .desc{color:var(--muted)}
-  .task .expl{margin-top:5px;color:var(--muted);font-size:13px;line-height:1.5}
+  .task .expl{margin-top:5px;color:var(--muted);font-size:13px;line-height:1.5;overflow-wrap:anywhere}
   .task .expl code{font-family:var(--mono);font-size:.85em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
 
   .empty{text-align:center;padding:70px 24px;color:var(--muted)}
@@ -175,8 +179,16 @@
     .layout{grid-template-columns:1fr}
     .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border)}
     .side-foot{margin-top:14px}
-    .content{padding:28px 20px 90px}
-    .grid.two,.grid.four{grid-template-columns:1fr}
+    .content{padding:28px 22px 90px}
+  }
+  @media (max-width:480px){
+    .content{padding:22px 15px 80px}
+    .page-head h2{font-size:22px}
+    .md h1{font-size:22px}
+    .md h2{font-size:19px}
+    .progress-head .pct{font-size:28px}
+    .stat .v{font-size:26px}
+    .task{padding:11px 12px}
   }
 
   /* Password gate (cosmetic — static host, not real auth) */
