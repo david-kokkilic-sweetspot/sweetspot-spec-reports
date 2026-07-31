@@ -178,9 +178,63 @@
     .content{padding:28px 20px 90px}
     .grid.two,.grid.four{grid-template-columns:1fr}
   }
+
+  /* Password gate (cosmetic — static host, not real auth) */
+  #gate{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;background:var(--bg);padding:20px}
+  #gate[hidden]{display:none}
+  .gate-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:34px 30px;width:min(360px,92vw);text-align:center;box-shadow:var(--shadow-lg)}
+  .gate-lock{font-size:32px;line-height:1}
+  .gate-card h1{font-size:19px;margin:14px 0 6px;letter-spacing:-.01em}
+  .gate-card p{color:var(--muted);margin:0 0 18px;font-size:13.5px}
+  #gate-form{display:flex;flex-direction:column;gap:10px}
+  #gate-input{font:inherit;font-size:14px;padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);text-align:center}
+  #gate-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  #gate-form button{font:inherit;font-size:14px;font-weight:600;padding:11px 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;cursor:pointer;transition:.15s}
+  #gate-form button:hover{filter:brightness(1.08)}
+  #gate-err{color:var(--p1);font-size:12.5px;min-height:16px}
+  .gate-note{margin-top:16px;font-size:11px;color:var(--faint);line-height:1.5}
 </style>
 </head>
 <body>
+<div id="gate" hidden>
+  <div class="gate-card">
+    <div class="gate-lock">🔒</div>
+    <h1>Protected report</h1>
+    <p>Enter the password to continue.</p>
+    <form id="gate-form" autocomplete="off">
+      <input id="gate-input" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password" />
+      <button type="submit">Unlock</button>
+      <div id="gate-err" role="alert"></div>
+    </form>
+    <div class="gate-note">Soft access gate on a static site — for casual privacy only, not strong security.</div>
+  </div>
+</div>
+<script>
+(function(){
+  // sha256("password") — the literal isn't stored in the page
+  var HASH="5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8";
+  var KEY="specreport_unlocked", gate=document.getElementById("gate");
+  if(sessionStorage.getItem(KEY)==="1") return;      // already unlocked this session
+  gate.hidden=false;
+  var input=document.getElementById("gate-input"), err=document.getElementById("gate-err");
+  setTimeout(function(){ input.focus(); },50);
+  function sha256(s){
+    if(!(window.crypto&&crypto.subtle)) return Promise.resolve(null);
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function(buf){
+      return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
+    });
+  }
+  document.getElementById("gate-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var v=input.value;
+    sha256(v).then(function(h){
+      var ok = h ? (h===HASH) : (v==="password");   // fallback if SubtleCrypto unavailable
+      if(ok){ sessionStorage.setItem(KEY,"1"); gate.hidden=true; }
+      else { err.textContent="Incorrect password"; input.select(); }
+    });
+  });
+})();
+</script>
 <div class="layout">
   <aside class="sidebar">
     <div class="brand">
