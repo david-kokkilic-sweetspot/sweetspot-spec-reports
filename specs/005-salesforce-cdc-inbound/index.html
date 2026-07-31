@@ -40,7 +40,9 @@
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
 
-  .layout{display:grid;grid-template-columns:288px minmax(0,1fr);min-height:100vh;max-width:1440px;margin-inline:auto;overflow-x:hidden}
+  .layout{display:grid;grid-template-columns:288px minmax(0,1fr);min-height:100vh;max-width:1440px;margin-inline:auto}
+  /* overflow-x:clip prevents sideways scroll WITHOUT creating a scroll container (so the sticky sidebar keeps working); hidden would coerce overflow-y to auto and break sticky */
+  html,body{overflow-x:clip}
 
   /* Sidebar */
   .sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:26px 20px;display:flex;flex-direction:column;gap:22px}
